@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  # LiveKit Server
+  livekit-server:
+    image: livekit/livekit-server:latest
+    ports:
+      - "7880:7880"
+      - "7881:7881"
+      - "7882:7882/udp"
+    volumes:
+      - ./livekit.yaml:/livekit.yaml
+    command: --config /livekit.yaml
+    environment:
+      - LIVEKIT_KEYS=APIhNxTWuSbc6f2: 2z2zb3VgqjFLPhN8N3T7t2zKnTksV4CtXNBh6yDCZc2
+    networks:
+      - propal-network
+
+  # proPAL Voice Agent
+  voice-agent:
+    build: .
+    depends_on:
+      - livekit-server
+    environment:
+      - LIVEKIT_URL=ws://livekit-server:7880
+      - LIVEKIT_API_KEY=${LIVEKIT_API_KEY}
+      - LIVEKIT_API_SECRET=${LIVEKIT_API_SECRET}
+      - DEEPGRAM_API_KEY=${DEEPGRAM_API_KEY}
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY}
+      - CARTESIA_API_KEY=${CARTESIA_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - TARGET_LATENCY=2.0
+    volumes:
+      - ./metrics:/app/metrics
+    ports:
+      - "8080:8080"
+    networks:
+      - propal-network
+    restart: unless-stopped
+
+  # Redis for caching (optional)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - propal-network
+    restart: unless-stopped
+
+  # Monitoring with Prometheus (optional)
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - propal-network
+    restart: unless-stopped
+
+networks:
+  propal-network:
+    driver: bridge
+
+volumes:
+  metrics-data:
+  redis-data:

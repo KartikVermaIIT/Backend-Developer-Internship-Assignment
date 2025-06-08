@@ -1,0 +1,73 @@
+# LiveKit Server Configuration for proPAL AI Voice Agent
+port: 7880
+bind_addresses:
+  - ""
+
+# API Configuration
+keys:
+  APIhNxTWuSbc6f2: 2z2zb3VgqjFLPhN8N3T7t2zKnTksV4CtXNBh6yDCZc2
+
+# Redis Configuration (optional)
+redis:
+  address: redis:6379
+
+# Room Configuration
+room:
+  # Enable simulcast for better quality
+  enable_simulcast: true
+  # Auto create rooms
+  auto_create: true
+  # Room timeout (30 minutes)
+  empty_timeout: 1800s
+  # Max participants per room
+  max_participants: 10
+
+# WebRTC Configuration
+webrtc:
+  # ICE servers for connectivity
+  ice_servers:
+    - urls:
+        - stun:stun.l.google.com:19302
+  # Use TCP for better corporate firewall compatibility
+  tcp_port: 7881
+  # Port range for UDP
+  port_range_start: 50000
+  port_range_end: 60000
+
+# Audio Processing
+audio:
+  # Enhanced audio processing for voice agents
+  # Noise suppression
+  noise_suppression: true
+  # Echo cancellation
+  echo_cancellation: true
+  # Automatic gain control
+  auto_gain_control: true
+
+# Logging Configuration
+logging:
+  level: info
+  # Log to file for debugging
+  json: false
+  # Component-specific logging
+  components:
+    livekit.rtc: info
+    livekit.service: info
+
+# Development Settings (remove in production)
+development: true
+
+# Metrics and Monitoring
+metrics:
+  # Enable Prometheus metrics
+  prometheus_port: 6789
+
+# Turn Server Configuration (if needed)
+# turn:
+#   enabled: true
+#   domain: your-turn-server.com
+#   tls_port: 5349
+#   udp_port: 3478
+
+# Region Configuration
+# region: us-west-2
